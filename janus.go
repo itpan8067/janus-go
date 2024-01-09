@@ -16,7 +16,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var debug = false
+var debug = true
 
 func unexpected(request string) error {
 	return fmt.Errorf("Unexpected response received to '%s' request", request)
@@ -97,7 +97,8 @@ func (gateway *Gateway) send(msg map[string]interface{}, transaction chan interf
 	if debug {
 		// log message being sent
 		var log bytes.Buffer
-		json.Indent(&log, data, ">", "   ")
+		log.Write([]byte("Send : \n"))
+		json.Indent(&log, data, "", "   ")
 		log.Write([]byte("\n"))
 		log.WriteTo(os.Stdout)
 	}
@@ -163,7 +164,7 @@ func (gateway *Gateway) recv() {
 
 			return
 		}
-
+		
 		if err := json.Unmarshal(data, &base); err != nil {
 			fmt.Printf("json.Unmarshal: %s\n", err)
 			continue
@@ -172,7 +173,8 @@ func (gateway *Gateway) recv() {
 		if debug {
 			// log message being sent
 			var log bytes.Buffer
-			json.Indent(&log, data, "<", "   ")
+			log.Write([]byte("Recv : \n"))
+			json.Indent(&log, data, "", "   ")
 			log.Write([]byte("\n"))
 			log.WriteTo(os.Stdout)
 		}
